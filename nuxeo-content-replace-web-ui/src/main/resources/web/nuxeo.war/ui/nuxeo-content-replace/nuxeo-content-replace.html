@@ -15,7 +15,7 @@ limitations under the License.
 -->
 <link rel="import" href="search-replace-content.html">
 
-<nuxeo-slot-content name="search-replace-content" slot="DOCUMENT_ACTIONS" order="50">
+<nuxeo-slot-content name="search-replace-doc" slot="DOCUMENT_ACTIONS" order="50">
   <template>
     <nuxeo-filter document="[[document]]" permission="Write">
       <template>
@@ -25,7 +25,7 @@ limitations under the License.
   </template>
 </nuxeo-slot-content>
 
-<nuxeo-slot-content name="search-replace-content" slot="BLOB_ACTIONS" order="50">
+<nuxeo-slot-content name="search-replace-blob" slot="BLOB_ACTIONS" order="50">
   <template>
     <nuxeo-filter document="[[document]]" permission="Write">
       <template>
