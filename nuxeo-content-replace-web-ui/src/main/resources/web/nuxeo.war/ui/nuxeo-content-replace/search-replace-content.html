@@ -1,0 +1,181 @@
+<!--
+@license
+(C) Copyright Nuxeo Corp. (http://nuxeo.com/)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!--
+A button element for performing search and replace on office documents.
+
+Example:
+
+    <search-replace-content document="[[document]]"></search-replace-content>
+
+@group Nuxeo UI
+@element search-replace-content
+-->
+<dom-module id="search-replace-content">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+    </style>
+
+    <nuxeo-operation id="searchReplace" op="Document.SearchReplaceContent" input="[[document.uid]]" params="[[_params(search, replace, regex)]]"></nuxeo-operation>
+
+    <template is="dom-if" if="[[_isAvailable(document)]]">
+      <div class="action" on-click="_toggleDialog">
+        <paper-icon-button icon="[[icon]]" noink></paper-icon-button>
+        <span class="label" hidden$="[[!showLabel]]">[[label]]</span>
+      </div>
+      <paper-tooltip>[[label]]</paper-tooltip>
+    </template>
+
+    <nuxeo-dialog id="dialog" with-backdrop>
+      <h2>Search and Replace</h2>
+
+      <paper-input label="Search" value="{{search}}"></paper-input>
+      <paper-input label="Replace" value="{{replace}}"></paper-input>
+      <paper-checkbox checked="{{regex}}">Regular Expression</paper-checkbox>
+
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button class="primary" dialog-confirm on-click="_execute">Execute</paper-button>
+      </div>
+    </nuxeo-dialog>
+
+
+  </template>
+  <script>
+    Polymer({
+      is: 'search-replace-content',
+      behaviors: [Nuxeo.I18nBehavior, Nuxeo.FiltersBehavior],
+      properties: {
+
+        document: {
+          type: Object
+        },
+
+        blob: {
+          type: Object
+        },
+
+        icon: {
+          type: String,
+          value: 'icons:find-replace'
+        },
+
+        xpath: {
+          type: String,
+          value: 'file:content'
+        },
+
+        search: {
+          type: String
+        },
+
+        replace: {
+          type: String,
+        },
+
+        regex: {
+          type: Boolean,
+          value: false
+        },
+
+        label: {
+          type: String,
+          value: "Search and Replace"
+        },
+
+        showLabel: {
+          type: Boolean,
+          value: false
+        },
+
+        textTypes: {
+          type: Array,
+          readOnly: true,
+          value: [
+            "application/msword",
+            "application/vnd.ms-word.document.macroenabled.12",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.ms-word.template.macroenabled.12",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+            "application/vnd.sun.xml.writer",
+            "application/vnd.sun.xml.writer.template",
+            "application/vnd.oasis.opendocument.text",
+            "application/vnd.oasis.opendocument.text-template",
+            "application/wordperfect"
+          ]
+        }
+      },
+
+      _isAvailable: function (document) {
+        this.blob = document && this._deepFind(document.properties, this.xpath);
+        if (this.blob) {
+          var mime = this.blob['mime-type'];
+          if (this.textTypes.indexOf(mime) >= 0) {
+            return true;
+          }
+        } else {
+          console.log("No such object: " + this.xpath);
+        }
+        return false;
+      },
+
+      _deepFind: function (obj, props) {
+        for (var i = 0, path = props.split('/'), len = path.length; i < len; i++) {
+          if (!obj || obj === []) {
+            break;
+          }
+          obj = obj[path[i]];
+        }
+        return obj;
+      },
+
+      _toggleDialog: function () {
+        this.$.dialog.toggle();
+      },
+
+      _params: function (search, replace, regex) {
+        return {
+          "search": this.search,
+          "replace": this.replace,
+          "regex": this.regex,
+          "xpath": this.xpath,
+        };
+      },
+
+      _execute: function () {
+        if (this.document) {
+          this.$.searchReplace.execute().then(() => {
+            this.fire('document-updated');
+            this.fire('notify', {
+              message: "Search and Replace complete"
+            });
+          }).catch((error) => {
+            console.log(error);
+            this.configured = "error";
+            this.fire('notify', {
+              message: "Search Replace Failed: " + error
+            });
+          });
+        }
+      },
+
+    });
+  </script>
+</dom-module>

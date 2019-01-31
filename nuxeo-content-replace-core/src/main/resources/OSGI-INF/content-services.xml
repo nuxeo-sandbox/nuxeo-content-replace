@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.platform.ext.content.services" version="1.0">
+
+  <require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib</require>
+  <require>org.nuxeo.ecm.platform.convert.plugins</require>
+
+  <extension target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+    point="command">
+    <command name="searchReplaceContentCommand" enabled="true">
+      <commandLine>python3</commandLine>
+      <parameterString>#{SCRIPT_DIR}/search_replace.py -s "#{search}" -r "#{replace}" -x #{regex} -o
+        #{targetFilePath}.#{type} #{sourceFilePath}
+      </parameterString>
+      <installationDirective>You need to configure LibreOffice python.</installationDirective>
+    </command>
+    <command name="stripUserInformationCommand" enabled="true">
+      <commandLine>python3</commandLine>
+      <parameterString>#{SCRIPT_DIR}/strip_user_information.py -o #{targetFilePath}.#{type} #{sourceFilePath}
+      </parameterString>
+      <installationDirective>You need to configure LibreOffice python.</installationDirective>
+    </command>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl" point="converter">
+    <converter name="searchReplaceDocument" enabled="true"
+      class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
+      <destinationMimeType>application/octet-stream</destinationMimeType>
+
+      <!-- Microsoft office documents -->
+      <sourceMimeType>application/msword</sourceMimeType>
+
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>application/vnd.openxmlformats-officedocument.wordprocessingml.document</sourceMimeType>
+
+      <!-- OpenOffice.org 1.x documents -->
+      <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer.template</sourceMimeType>
+
+      <!-- OpenOffice.org 2.x documents -->
+      <sourceMimeType>application/vnd.oasis.opendocument.text</sourceMimeType>
+      <sourceMimeType>application/vnd.oasis.opendocument.text-template</sourceMimeType>
+
+      <!-- WordPerfect -->
+      <sourceMimeType>application/wordperfect</sourceMimeType>
+      <parameters>
+        <parameter name="CommandLineName">searchReplaceContentCommand</parameter>
+        <parameter name="SCRIPT_DIR">${nuxeo.runtime.home}/python</parameter>
+      </parameters>
+    </converter>
+
+    <converter name="stripUserInformation" enabled="true"
+      class="org.nuxeo.ecm.platform.convert.plugins.CommandLineConverter">
+      <destinationMimeType>application/octet-stream</destinationMimeType>
+      
+      <!-- Microsoft office documents -->
+      <sourceMimeType>application/msword</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-powerpoint</sourceMimeType>
+      <sourceMimeType>application/vnd.ms-excel</sourceMimeType>
+
+      <!-- Microsoft office 2007 documents -->
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.wordprocessingml.document
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.presentationml.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      </sourceMimeType>
+
+      <!-- OpenOffice.org 1.x documents -->
+      <sourceMimeType>application/vnd.sun.xml.writer</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.writer.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.impress.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.calc.template</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.draw</sourceMimeType>
+      <sourceMimeType>application/vnd.sun.xml.draw.template</sourceMimeType>
+
+      <!-- OpenOffice.org 2.x documents -->
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.spreadsheet
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.spreadsheet-template
+      </sourceMimeType>
+      <sourceMimeType>application/vnd.oasis.opendocument.text</sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.text-template
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.presentation
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.presentation-template
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.graphics
+      </sourceMimeType>
+      <sourceMimeType>
+        application/vnd.oasis.opendocument.graphics-template
+      </sourceMimeType>
+
+      <!-- WordPerfect -->
+      <sourceMimeType>application/wordperfect</sourceMimeType>
+      <parameters>
+        <parameter name="CommandLineName">stripUserInformationCommand</parameter>
+        <parameter name="SCRIPT_DIR">${nuxeo.runtime.home}/python</parameter>
+      </parameters>
+    </converter>
+  </extension>
+
+</component>

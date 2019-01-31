@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Content Replace WebUI
+Bundle-SymbolicName: org.nuxeo.platform.ext.content.webui;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/nuxeo-content-replace-webresources-contrib.xml

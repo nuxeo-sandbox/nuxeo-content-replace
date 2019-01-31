@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<fragment version="1">
+  <require>all</require>
+  <install>
+    <delete path="${bundle.fileName}.tmp"/>
+    <unzip from="${bundle.fileName}" to="${bundle.fileName}.tmp"/>
+    <mkdir path="/python"/>
+    <copy from="${bundle.fileName}.tmp/python" to="/"/>
+    <delete path="${bundle.fileName}.tmp"/>
+  </install>
+</fragment>
